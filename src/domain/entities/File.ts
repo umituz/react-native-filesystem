@@ -131,4 +131,92 @@ export class FileUtils {
       .join('/')
       .replace(/\/+/g, '/');
   }
+
+  /**
+   * Get filename from filepath
+   */
+  static getFileName(filepath: string): string {
+    return filepath.split('/').pop() || '';
+  }
+
+  /**
+   * Get MIME type from filename
+   */
+  static getMimeType(filename: string): string {
+    const ext = this.getFileExtension(filename).toLowerCase().replace('.', '');
+    
+    const mimeTypes: Record<string, string> = {
+      // Images
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      gif: 'image/gif',
+      webp: 'image/webp',
+      svg: 'image/svg+xml',
+      
+      // Documents
+      pdf: 'application/pdf',
+      doc: 'application/msword',
+      docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      xls: 'application/vnd.ms-excel',
+      xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      
+      // Text
+      txt: 'text/plain',
+      csv: 'text/csv',
+      json: 'application/json',
+      
+      // Video
+      mp4: 'video/mp4',
+      mov: 'video/quicktime',
+      avi: 'video/x-msvideo',
+      mkv: 'video/x-matroska',
+      webm: 'video/webm',
+      
+      // Audio
+      mp3: 'audio/mpeg',
+      wav: 'audio/wav',
+      m4a: 'audio/mp4',
+      ogg: 'audio/ogg',
+      flac: 'audio/flac',
+    };
+    
+    return mimeTypes[ext] || 'application/octet-stream';
+  }
+
+  /**
+   * Check if file is an image
+   */
+  static isImageFile(filename: string): boolean {
+    const ext = this.getFileExtension(filename).toLowerCase().replace('.', '');
+    return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
+  }
+
+  /**
+   * Check if file is a video
+   */
+  static isVideoFile(filename: string): boolean {
+    const ext = this.getFileExtension(filename).toLowerCase().replace('.', '');
+    return ['mp4', 'mov', 'avi', 'mkv', 'webm'].includes(ext);
+  }
+
+  /**
+   * Check if file is an audio file
+   */
+  static isAudioFile(filename: string): boolean {
+    const ext = this.getFileExtension(filename).toLowerCase().replace('.', '');
+    return ['mp3', 'wav', 'm4a', 'ogg', 'flac'].includes(ext);
+  }
+
+  /**
+   * Generate filename with prefix (alternative to generateUniqueFilename)
+   */
+  static generateFileName(originalName: string, prefix?: string): string {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 9);
+    const ext = this.getFileExtension(originalName);
+    const baseName = prefix ? `${prefix}_` : '';
+
+    return `${baseName}${timestamp}_${random}${ext}`;
+  }
 }
