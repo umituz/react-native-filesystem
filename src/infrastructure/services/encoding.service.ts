@@ -3,18 +3,14 @@
  * Single Responsibility: Handle file encoding/decoding operations
  */
 
-import * as FileSystem from "expo-file-system";
 import type { FileEncoding } from "../../domain/entities/File";
 
 /**
  * Convert FileEncoding to Expo FileSystem encoding type
+ * Expo v19+ uses string literals directly
  */
-export function getEncodingType(encoding: FileEncoding): any {
-  // Expo v19+ uses different encoding format
-  if (encoding === "base64") {
-    return FileSystem.EncodingType?.Base64 ?? "base64";
-  }
-  return FileSystem.EncodingType?.UTF8 ?? "utf8";
+export function getEncodingType(encoding: FileEncoding): "utf8" | "base64" {
+  return encoding;
 }
 
 /**
