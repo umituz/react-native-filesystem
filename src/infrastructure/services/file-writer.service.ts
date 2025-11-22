@@ -3,7 +3,7 @@
  * Single Responsibility: Write files to device storage
  */
 
-import * as FileSystem from "expo-file-system/legacy";
+import * as FileSystem from "expo-file-system";
 import type { FileEncoding, FileOperationResult } from "../../domain/entities/File";
 import { getEncodingType } from "./encoding.service";
 

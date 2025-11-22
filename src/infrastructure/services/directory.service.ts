@@ -3,7 +3,7 @@
  * Single Responsibility: Manage directory operations
  */
 
-import * as FileSystem from "expo-file-system/legacy";
+import * as FileSystem from "expo-file-system";
 import type { DirectoryType } from "../../domain/entities/File";
 
 /**

@@ -3,7 +3,7 @@
  * Single Responsibility: Download files from URLs
  */
 
-import * as FileSystem from "expo-file-system/legacy";
+import * as FileSystem from "expo-file-system";
 import type { FileOperationResult } from "../../domain/entities/File";
 import { getDirectoryPath } from "./directory.service";
 import { FileUtils } from "../../domain/entities/File";

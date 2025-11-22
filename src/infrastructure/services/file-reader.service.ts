@@ -3,7 +3,7 @@
  * Single Responsibility: Read files from device storage
  */
 
-import * as FileSystem from "expo-file-system/legacy";
+import * as FileSystem from "expo-file-system";
 import type { FileEncoding } from "../../domain/entities/File";
 import { getEncodingType } from "./encoding.service";
 
@@ -15,6 +15,23 @@ export async function readFile(
   encoding: FileEncoding = "utf8",
 ): Promise<string | null> {
   try {
+    // For file:// URLs, try fetch first (works in React Native)
+    if (uri.startsWith("file://")) {
+      try {
+        const response = await fetch(uri);
+        if (response.ok) {
+          if (encoding === "base64") {
+            const blob = await response.blob();
+            return await blobToBase64(blob);
+          }
+          return await response.text();
+        }
+      } catch (fetchError) {
+        // Fall through to FileSystem API
+      }
+    }
+
+    // Use FileSystem API as fallback
     const encodingType = getEncodingType(encoding);
     const content = await FileSystem.readAsStringAsync(uri, {
       encoding: encodingType as FileSystem.EncodingType,
@@ -23,6 +40,23 @@ export async function readFile(
   } catch (error) {
     return null;
   }
+}
+
+/**
+ * Convert blob to base64 string
+ */
+function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      // Remove data URL prefix if present
+      const base64 = result.includes(",") ? result.split(",")[1] : result;
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
 
 /**
