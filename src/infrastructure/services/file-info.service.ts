@@ -3,7 +3,7 @@
  * Single Responsibility: Get file information and metadata
  */
 
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import type { FileInfo } from "../../domain/entities/File";
 
 /**

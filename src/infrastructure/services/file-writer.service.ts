@@ -3,7 +3,7 @@
  * Single Responsibility: Write files to device storage
  */
 
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import type { FileEncoding, FileOperationResult } from "../../domain/entities/File";
 import { getEncodingType } from "./encoding.service";
 
@@ -18,7 +18,7 @@ export async function writeFile(
   try {
     const encodingType = getEncodingType(encoding);
     await FileSystem.writeAsStringAsync(uri, content, {
-      encoding: encodingType,
+      encoding: encodingType as FileSystem.EncodingType,
     });
     return { success: true, uri };
   } catch (error) {

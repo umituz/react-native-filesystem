@@ -3,7 +3,7 @@
  * Single Responsibility: Manage directory operations
  */
 
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import type { DirectoryType } from "../../domain/entities/File";
 
 /**
@@ -37,19 +37,9 @@ export function getDirectoryPath(type: DirectoryType): string {
   try {
     switch (type) {
       case "documentDirectory":
-        // Try Expo v19+ API first
-        if ((FileSystem as any).Paths?.document?.uri) {
-          return (FileSystem as any).Paths.document.uri;
-        }
-        // Fallback for older versions
-        return (FileSystem as any).documentDirectory || "";
+        return FileSystem.documentDirectory || "";
       case "cacheDirectory":
-        // Try Expo v19+ API first
-        if ((FileSystem as any).Paths?.cache?.uri) {
-          return (FileSystem as any).Paths.cache.uri;
-        }
-        // Fallback for older versions
-        return (FileSystem as any).cacheDirectory || "";
+        return FileSystem.cacheDirectory || "";
       default:
         return "";
     }
