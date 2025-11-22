@@ -45,3 +45,4 @@ export async function getDirectorySize(uri: string): Promise<number> {
   }
 }
 
+

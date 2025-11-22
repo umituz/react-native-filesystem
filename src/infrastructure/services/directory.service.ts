@@ -37,9 +37,9 @@ export function getDirectoryPath(type: DirectoryType): string {
   try {
     switch (type) {
       case "documentDirectory":
-        return FileSystem.documentDirectory || "";
+        return (FileSystem as any).documentDirectory || "";
       case "cacheDirectory":
-        return FileSystem.cacheDirectory || "";
+        return (FileSystem as any).cacheDirectory || "";
       default:
         return "";
     }
