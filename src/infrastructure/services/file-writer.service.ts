@@ -18,7 +18,7 @@ export async function writeFile(
   try {
     const encodingType = getEncodingType(encoding);
     await FileSystem.writeAsStringAsync(uri, content, {
-      encoding: encodingType as FileSystem.EncodingType,
+      encoding: encodingType as any,
     });
     return { success: true, uri };
   } catch (error) {

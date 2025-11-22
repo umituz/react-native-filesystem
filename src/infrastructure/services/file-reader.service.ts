@@ -34,7 +34,7 @@ export async function readFile(
     // Use FileSystem API as fallback
     const encodingType = getEncodingType(encoding);
     const content = await FileSystem.readAsStringAsync(uri, {
-      encoding: encodingType as FileSystem.EncodingType,
+      encoding: encodingType as any,
     });
     return content;
   } catch (error) {
