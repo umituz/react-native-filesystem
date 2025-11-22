@@ -3,7 +3,7 @@
  * Single Responsibility: Manage directory operations
  */
 
-import * as FileSystem from "expo-file-system";
+import { Directory, Paths } from "expo-file-system";
 import type { DirectoryType } from "../../domain/entities/File";
 
 /**
@@ -11,7 +11,8 @@ import type { DirectoryType } from "../../domain/entities/File";
  */
 export async function createDirectory(uri: string): Promise<boolean> {
   try {
-    await FileSystem.makeDirectoryAsync(uri, { intermediates: true });
+    const dir = new Directory(uri);
+    dir.create({ intermediates: true, idempotent: true });
     return true;
   } catch (error) {
     return false;
@@ -23,8 +24,9 @@ export async function createDirectory(uri: string): Promise<boolean> {
  */
 export async function listDirectory(uri: string): Promise<string[]> {
   try {
-    const files = await FileSystem.readDirectoryAsync(uri);
-    return files;
+    const dir = new Directory(uri);
+    const items = dir.list();
+    return items.map((item) => item.uri);
   } catch (error) {
     return [];
   }
@@ -37,9 +39,9 @@ export function getDirectoryPath(type: DirectoryType): string {
   try {
     switch (type) {
       case "documentDirectory":
-        return (FileSystem as any).documentDirectory || "";
+        return Paths.document.uri;
       case "cacheDirectory":
-        return (FileSystem as any).cacheDirectory || "";
+        return Paths.cache.uri;
       default:
         return "";
     }

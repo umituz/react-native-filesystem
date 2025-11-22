@@ -3,7 +3,7 @@
  * Single Responsibility: Get file information and metadata
  */
 
-import * as FileSystem from "expo-file-system";
+import { File } from "expo-file-system";
 import type { FileInfo } from "../../domain/entities/File";
 
 /**
@@ -11,19 +11,21 @@ import type { FileInfo } from "../../domain/entities/File";
  */
 export async function getFileInfo(uri: string): Promise<FileInfo | null> {
   try {
-    const info = await FileSystem.getInfoAsync(uri);
+    const file = new File(uri);
 
-    if (!info.exists) {
+    if (!file.exists) {
       return null;
     }
 
+    const info = file.info();
+
     return {
       uri,
-      name: uri.split("/").pop() || "",
-      size: info.size || 0,
-      exists: info.exists,
-      isDirectory: info.isDirectory || false,
-      modificationTime: info.modificationTime || 0,
+      name: file.name,
+      size: file.size || 0,
+      exists: file.exists,
+      isDirectory: false,
+      modificationTime: file.modificationTime || 0,
     };
   } catch (error) {
     return null;
@@ -35,8 +37,8 @@ export async function getFileInfo(uri: string): Promise<FileInfo | null> {
  */
 export async function fileExists(uri: string): Promise<boolean> {
   try {
-    const info = await FileSystem.getInfoAsync(uri);
-    return info.exists;
+    const file = new File(uri);
+    return file.exists;
   } catch (error) {
     return false;
   }

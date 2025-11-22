@@ -3,7 +3,7 @@
  * Single Responsibility: Manage file operations (delete, copy, move)
  */
 
-import * as FileSystem from "expo-file-system";
+import { File, Directory } from "expo-file-system";
 import type { FileOperationResult } from "../../domain/entities/File";
 
 /**
@@ -11,8 +11,29 @@ import type { FileOperationResult } from "../../domain/entities/File";
  */
 export async function deleteFile(uri: string): Promise<boolean> {
   try {
-    await FileSystem.deleteAsync(uri, { idempotent: true });
-    return true;
+    // Try as file first
+    try {
+      const file = new File(uri);
+      if (file.exists) {
+        file.delete();
+        return true;
+      }
+    } catch {
+      // Not a file, try as directory
+    }
+
+    // Try as directory
+    try {
+      const dir = new Directory(uri);
+      if (dir.exists) {
+        dir.delete();
+        return true;
+      }
+    } catch {
+      // Not a directory either
+    }
+
+    return false;
   } catch (error) {
     return false;
   }
@@ -26,10 +47,9 @@ export async function copyFile(
   destinationUri: string,
 ): Promise<FileOperationResult> {
   try {
-    await FileSystem.copyAsync({
-      from: sourceUri,
-      to: destinationUri,
-    });
+    const sourceFile = new File(sourceUri);
+    const destination = new File(destinationUri);
+    sourceFile.copy(destination);
     return { success: true, uri: destinationUri };
   } catch (error) {
     return {
@@ -47,10 +67,9 @@ export async function moveFile(
   destinationUri: string,
 ): Promise<FileOperationResult> {
   try {
-    await FileSystem.moveAsync({
-      from: sourceUri,
-      to: destinationUri,
-    });
+    const sourceFile = new File(sourceUri);
+    const destination = new File(destinationUri);
+    sourceFile.move(destination);
     return { success: true, uri: destinationUri };
   } catch (error) {
     return {

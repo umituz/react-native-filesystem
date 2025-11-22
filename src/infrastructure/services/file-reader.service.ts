@@ -3,7 +3,7 @@
  * Single Responsibility: Read files from device storage
  */
 
-import * as FileSystem from "expo-file-system";
+import { File } from "expo-file-system";
 import type { FileEncoding } from "../../domain/entities/File";
 import { getEncodingType } from "./encoding.service";
 
@@ -32,10 +32,12 @@ export async function readFile(
     }
 
     // Use FileSystem API as fallback
-    const encodingType = getEncodingType(encoding);
-    const content = await FileSystem.readAsStringAsync(uri, {
-      encoding: encodingType as any,
-    });
+    const file = new File(uri);
+    if (encoding === "base64") {
+      const content = await file.base64();
+      return content;
+    }
+    const content = await file.text();
     return content;
   } catch (error) {
     return null;
