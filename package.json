@@ -1,6 +1,6 @@
 {
   "name": "@umituz/react-native-filesystem",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "Domain-Driven Design filesystem utilities for React Native apps with build-time module loading and runtime file operations",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

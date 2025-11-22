@@ -5,6 +5,7 @@
 
 import * as FileSystem from "expo-file-system";
 import type { FileEncoding } from "../../domain/entities/File";
+import { getEncodingType } from "./encoding.service";
 
 /**
  * Read file as string with encoding
@@ -14,11 +15,7 @@ export async function readFile(
   encoding: FileEncoding = "utf8",
 ): Promise<string | null> {
   try {
-    const encodingType =
-      encoding === "base64"
-        ? FileSystem.EncodingType.Base64
-        : FileSystem.EncodingType.UTF8;
-
+    const encodingType = getEncodingType(encoding);
     const content = await FileSystem.readAsStringAsync(uri, {
       encoding: encodingType,
     });

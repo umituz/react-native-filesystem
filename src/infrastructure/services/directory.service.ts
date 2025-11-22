@@ -34,13 +34,27 @@ export async function listDirectory(uri: string): Promise<string[]> {
  * Get directory path by type
  */
 export function getDirectoryPath(type: DirectoryType): string {
-  switch (type) {
-    case "documentDirectory":
-      return FileSystem.documentDirectory || "";
-    case "cacheDirectory":
-      return FileSystem.cacheDirectory || "";
-    default:
-      return "";
+  try {
+    switch (type) {
+      case "documentDirectory":
+        // Try Expo v19+ API first
+        if ((FileSystem as any).Paths?.document?.uri) {
+          return (FileSystem as any).Paths.document.uri;
+        }
+        // Fallback for older versions
+        return (FileSystem as any).documentDirectory || "";
+      case "cacheDirectory":
+        // Try Expo v19+ API first
+        if ((FileSystem as any).Paths?.cache?.uri) {
+          return (FileSystem as any).Paths.cache.uri;
+        }
+        // Fallback for older versions
+        return (FileSystem as any).cacheDirectory || "";
+      default:
+        return "";
+    }
+  } catch (error) {
+    return "";
   }
 }
 

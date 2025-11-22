@@ -5,6 +5,7 @@
 
 import * as FileSystem from "expo-file-system";
 import type { FileEncoding, FileOperationResult } from "../../domain/entities/File";
+import { getEncodingType } from "./encoding.service";
 
 /**
  * Write string to file
@@ -15,12 +16,10 @@ export async function writeFile(
   encoding: FileEncoding = "utf8",
 ): Promise<FileOperationResult> {
   try {
-    const encodingType =
-      encoding === "base64"
-        ? FileSystem.EncodingType.Base64
-        : FileSystem.EncodingType.UTF8;
-
-    await FileSystem.writeAsStringAsync(uri, content, { encoding: encodingType });
+    const encodingType = getEncodingType(encoding);
+    await FileSystem.writeAsStringAsync(uri, content, {
+      encoding: encodingType,
+    });
     return { success: true, uri };
   } catch (error) {
     return {
