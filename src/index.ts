@@ -174,12 +174,5 @@ export {
   FileUtils,
 } from './domain/entities/File';
 
-// Infrastructure Layer - FileSystem Service & Specialized Services
+// Infrastructure Layer - FileSystem Service
 export { FileSystemService } from './infrastructure/services/FileSystemService';
-export { FileOperations } from './infrastructure/services/FileOperations';
-export { FileManagement } from './infrastructure/services/FileManagement';
-export { DirectoryOperations } from './infrastructure/services/DirectoryOperations';
-export { FileInformation } from './infrastructure/services/FileInformation';
-export { DownloadOperations } from './infrastructure/services/DownloadOperations';
-export { CacheOperations } from './infrastructure/services/CacheOperations';
-export { FilePathOperations } from './infrastructure/services/FilePathOperations';
