@@ -1,160 +1,117 @@
 /**
- * FileSystem Service
- * Single Responsibility: Facade for all file system operations
- * 
- * This is a facade that delegates to specialized services
- * following Single Responsibility Principle
+ * FileSystem Service - Facade
+ * Delegates to specialized services following SOLID principles
  */
 
-import { readFile, readFileAsBase64 } from "./file-reader.service";
-import { writeFile } from "./file-writer.service";
-import { deleteFile, copyFile, moveFile } from "./file-manager.service";
-import {
-  createDirectory,
-  listDirectory,
-  getDirectoryPath,
-  getDocumentDirectory,
-  getCacheDirectory,
-} from "./directory.service";
-import { getFileInfo, fileExists, getFileSize } from "./file-info.service";
-import { downloadFile } from "./download.service";
-import { clearCache, getDirectorySize } from "./cache.service";
-import { generateFilePath } from "./file-path.service";
-import type {
-  FileInfo,
-  FileOperationResult,
-  DirectoryType,
-  FileEncoding,
-} from "../../domain/entities/File";
-import { copyFile as copyFileOp } from "./file-manager.service";
+import { FileOperations } from "./FileOperations";
+import { FileManagement } from "./FileManagement";
+import { DirectoryOperations } from "./DirectoryOperations";
+import { FileInformation } from "./FileInformation";
+import { DownloadOperations } from "./DownloadOperations";
+import { CacheOperations } from "./CacheOperations";
+import { FilePathOperations } from "./FilePathOperations";
 import { FileUtils } from "../../domain/entities/File";
+import type { FileEncoding, DirectoryType, FileOperationResult } from "../../domain/entities/File";
 
 /**
- * FileSystem Service - Facade for all file operations
- * Delegates to specialized services following SOLID principles
+ * FileSystem Service - Clean facade for all file operations
+ * Delegates to specialized services following Single Responsibility Principle
  */
 export class FileSystemService {
   // File Reading
-  static async readFile(
-    uri: string,
-    encoding: FileEncoding = "utf8",
-  ): Promise<string | null> {
-    return readFile(uri, encoding);
+  static async readFile(uri: string, encoding: FileEncoding = "utf8"): Promise<string | null> {
+    return FileOperations.readFile(uri, encoding);
   }
 
   static async readFileAsBase64(uri: string): Promise<string | null> {
-    return readFileAsBase64(uri);
+    return FileOperations.readFileAsBase64(uri);
   }
 
   // File Writing
-  static async writeFile(
-    uri: string,
-    content: string,
-    encoding: FileEncoding = "utf8",
-  ): Promise<FileOperationResult> {
-    return writeFile(uri, content, encoding);
+  static async writeFile(uri: string, content: string, encoding: FileEncoding = "utf8"): Promise<FileOperationResult> {
+    return FileOperations.writeFile(uri, content, encoding);
   }
 
   // File Management
   static async deleteFile(uri: string): Promise<boolean> {
-    return deleteFile(uri);
+    return FileManagement.deleteFile(uri);
   }
 
-  static async copyFile(
-    sourceUri: string,
-    destinationUri: string,
-  ): Promise<FileOperationResult> {
-    return copyFileOp(sourceUri, destinationUri);
+  static async copyFile(sourceUri: string, destinationUri: string): Promise<FileOperationResult> {
+    return FileManagement.copyFile(sourceUri, destinationUri);
   }
 
-  static async moveFile(
-    sourceUri: string,
-    destinationUri: string,
-  ): Promise<FileOperationResult> {
-    return moveFile(sourceUri, destinationUri);
+  static async moveFile(sourceUri: string, destinationUri: string): Promise<FileOperationResult> {
+    return FileManagement.moveFile(sourceUri, destinationUri);
   }
 
   // Directory Operations
   static async createDirectory(uri: string): Promise<boolean> {
-    return createDirectory(uri);
+    return DirectoryOperations.createDirectory(uri);
   }
 
   static async listDirectory(uri: string): Promise<string[]> {
-    return listDirectory(uri);
+    return DirectoryOperations.listDirectory(uri);
   }
 
   static getDirectoryPath(type: DirectoryType): string {
-    return getDirectoryPath(type);
+    return DirectoryOperations.getDirectoryPath(type);
   }
 
   static getDocumentDirectory(): string {
-    return getDocumentDirectory();
+    return DirectoryOperations.getDocumentDirectory();
   }
 
   static getCacheDirectory(): string {
-    return getCacheDirectory();
+    return DirectoryOperations.getCacheDirectory();
   }
 
   // File Information
-  static async getFileInfo(uri: string): Promise<FileInfo | null> {
-    return getFileInfo(uri);
+  static async getFileInfo(uri: string) {
+    return FileInformation.getFileInfo(uri);
   }
 
   static async exists(uri: string): Promise<boolean> {
-    return fileExists(uri);
+    return FileInformation.exists(uri);
   }
 
   static async getFileSize(uri: string): Promise<number> {
-    return getFileSize(uri);
+    return FileInformation.getFileSize(uri);
   }
 
   // Downloads
-  static async downloadFile(
-    url: string,
-    destinationUri?: string,
-  ): Promise<FileOperationResult> {
-    return downloadFile(url, destinationUri);
+  static async downloadFile(url: string, destinationUri?: string): Promise<FileOperationResult> {
+    return DownloadOperations.downloadFile(url, destinationUri);
   }
 
   // Cache Management
   static async clearCache(): Promise<boolean> {
-    return clearCache();
+    return CacheOperations.clearCache();
   }
 
   static async getDirectorySize(uri: string): Promise<number> {
-    return getDirectorySize(uri);
+    return CacheOperations.getDirectorySize(uri);
   }
 
   // File Path Generation
-  static generateFilePath(
-    filename: string,
-    directory: DirectoryType = "documentDirectory",
-  ): string {
-    return generateFilePath(filename, directory);
+  static generateFilePath(filename: string, directory: DirectoryType = "documentDirectory"): string {
+    return FilePathOperations.generateFilePath(filename, directory);
   }
 
-  // Convenience methods (delegates to other services)
-  static async copyToCache(
-    sourceUri: string,
-    filename?: string,
-  ): Promise<FileOperationResult> {
-    const name = filename || sourceUri.split("/").pop() || "file";
-    const destinationUri = FileUtils.joinPaths(
-      getDirectoryPath("cacheDirectory"),
-      FileUtils.generateUniqueFilename(name),
+  // Convenience methods
+  static async copyToCache(sourceUri: string, filename?: string): Promise<FileOperationResult> {
+    const destinationUri = FilePathOperations.generateUniqueFilePath(
+      filename || sourceUri.split("/").pop() || "file",
+      "cacheDirectory"
     );
-    return copyFileOp(sourceUri, destinationUri);
+    return FileManagement.copyFile(sourceUri, destinationUri);
   }
 
-  static async copyToDocuments(
-    sourceUri: string,
-    filename?: string,
-  ): Promise<FileOperationResult> {
-    const name = filename || sourceUri.split("/").pop() || "file";
-    const destinationUri = FileUtils.joinPaths(
-      getDirectoryPath("documentDirectory"),
-      FileUtils.generateUniqueFilename(name),
+  static async copyToDocuments(sourceUri: string, filename?: string): Promise<FileOperationResult> {
+    const destinationUri = FilePathOperations.generateUniqueFilePath(
+      filename || sourceUri.split("/").pop() || "file",
+      "documentDirectory"
     );
-    return copyFileOp(sourceUri, destinationUri);
+    return FileManagement.copyFile(sourceUri, destinationUri);
   }
 }

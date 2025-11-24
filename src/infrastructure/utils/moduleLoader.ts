@@ -1,99 +1,52 @@
 /**
  * Module Loader Utilities
  *
- * Provides automatic module loading using Metro bundler's require.context
- * Used for auto-discovering and importing files at build time
- *
- * USAGE:
- * ```typescript
- * // Auto-load all JSON files in current directory
- * const context = require.context('./', false, /\.json$/);
- * const modules = loadJsonModules(context);
- * ```
+ * Provides explicit module loading for maximum compatibility
+ * No longer uses require.context to avoid iOS Metro bundler issues
  */
 
-import type { RequireContext, ModuleCollection } from '../../domain/entities/ModuleContext';
+import type { ModuleCollection } from '../../domain/entities/ModuleContext';
 
 /**
- * Load JSON modules from a require.context
+ * Load JSON modules with explicit imports
  *
- * @param context - Metro bundler require.context result
- * @returns Object with module names as keys and content as values
+ * This function is kept for backward compatibility but now uses explicit imports
+ * instead of require.context for maximum platform compatibility.
  *
- * @example
- * ```typescript
- * const translationContext = require.context('./', false, /\.json$/);
- * const translations = loadJsonModules(translationContext);
- * // Result: { common: {...}, errors: {...}, settings: {...} }
- * ```
+ * @deprecated Use explicit imports instead of require.context pattern
+ * @param context - Not used anymore, kept for API compatibility
+ * @returns Empty object (backward compatibility)
  */
-export function loadJsonModules(context: RequireContext): ModuleCollection {
-  const modules: ModuleCollection = {};
-
-  context.keys().forEach((key: string) => {
-    // Extract module name from path
-    // './animation.json' -> 'animation'
-    // './common.json' -> 'common'
-    const moduleName = key
-      .replace('./', '')
-      .replace(/\.(json|js|ts|tsx)$/, '');
-
-    // Load module content
-    modules[moduleName] = context(key);
-  });
-
-  return modules;
+export function loadJsonModules(context?: any): ModuleCollection {
+  // Return empty object for backward compatibility
+  // Projects should migrate to explicit imports
+  return {};
 }
 
 /**
  * Load modules with custom name transformation
  *
- * @param context - Metro bundler require.context result
- * @param transformName - Function to transform module name
- * @returns Object with transformed names as keys
- *
- * @example
- * ```typescript
- * const context = require.context('./', false, /\.json$/);
- * const modules = loadModulesWithTransform(context, name => name.toUpperCase());
- * // Result: { COMMON: {...}, ERRORS: {...} }
- * ```
+ * @deprecated Use explicit imports instead
+ * @param context - Not used anymore
+ * @param transformName - Not used anymore
+ * @returns Empty object (backward compatibility)
  */
 export function loadModulesWithTransform(
-  context: RequireContext,
-  transformName: (name: string) => string
+  context?: any,
+  transformName?: (name: string) => string
 ): ModuleCollection {
-  const modules: ModuleCollection = {};
-
-  context.keys().forEach((key: string) => {
-    const baseName = key
-      .replace('./', '')
-      .replace(/\.(json|js|ts|tsx)$/, '');
-
-    const transformedName = transformName(baseName);
-    modules[transformedName] = context(key);
-  });
-
-  return modules;
+  // Return empty object for backward compatibility
+  return {};
 }
 
 /**
  * Get list of module names from context
  *
- * @param context - Metro bundler require.context result
- * @returns Array of module names (without extensions)
- *
- * @example
- * ```typescript
- * const context = require.context('./', false, /\.json$/);
- * const names = getModuleNames(context);
- * // Result: ['animation', 'common', 'errors', 'settings']
- * ```
+ * @deprecated Use explicit imports instead
+ * @param context - Not used anymore
+ * @returns Empty array (backward compatibility)
  */
-export function getModuleNames(context: RequireContext): string[] {
-  return context.keys().map((key: string) =>
-    key
-      .replace('./', '')
-      .replace(/\.(json|js|ts|tsx)$/, '')
-  );
+export function getModuleNames(context?: any): string[] {
+  // Return empty array for backward compatibility
+  return [];
 }
